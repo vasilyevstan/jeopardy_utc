@@ -1,0 +1,83 @@
+Create a self-contained Jeopardy-style quiz web application that runs locally in the browser (no backend required). Deliver a single HTML file (`index.html`) and a companion plain-text data file (`questions.txt`). All CSS and JavaScript must be inline inside `index.html`.
+
+────────────────────────────────────────────
+DESIGN — Microsoft Brand Colors
+────────────────────────────────────────────
+Use the official Microsoft color palette:
+  • Background:   #000000 (black) or #1b1b1b (near-black)
+  • Primary blue: #0078d4 (Microsoft Blue)
+  • Accent:       #50e6ff (Fluent cyan / Azure)
+  • Text light:   #ffffff
+  • Muted text:   #c8c8c8
+  • Answered card: #333333 with reduced opacity
+  • Font family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif
+
+The board should feel polished and professional — like a corporate Microsoft event or Fluent Design presentation.
+
+────────────────────────────────────────────
+LAYOUT — The Game Board
+────────────────────────────────────────────
+• Full-width grid. Columns = number of categories. Rows = 6 (1 header row + 5 question rows).
+• Header row: category names, styled prominently (uppercase, bold, blue background).
+• Rows 1–5: difficulty levels 1 to 5 (shown as large numbers, e.g. "1", "2" ... "5").
+• Each cell is a card with a subtle border, hover glow effect using the cyan accent color.
+• The board should fill most of the viewport and be centered.
+
+────────────────────────────────────────────
+INTERACTIONS
+────────────────────────────────────────────
+1. Click a question card:
+   - The card animates (scale-up + fade) into a large overlay panel centered on screen.
+   - The overlay covers ~70–80% of the screen, with a dark semi-transparent backdrop.
+   - The overlay shows: category name (top), difficulty level (top-right), question text (large, centered).
+   - An "✕" close button appears in the top-right corner of the overlay.
+   - Clicking ✕ (or the backdrop) animates the overlay back closed (reverse scale + fade).
+   - Use CSS transitions (not JS animation libraries) — keep it smooth (~300ms ease).
+
+2. Answered state:
+   - Once a card has been opened, it is marked as "answered" in memory (JavaScript variable, not localStorage).
+   - Answered cards appear dimmed/grayed-out and their number is no longer clickable.
+   - This state resets on page reload (no persistence required).
+
+────────────────────────────────────────────
+DATA FILE — questions.txt format
+────────────────────────────────────────────
+The app must load `questions.txt` from the same directory via `fetch('./questions.txt')`.
+Use the following plain-text format (easy to hand-edit):
+
+  [Category Name]
+  1: Question text for level 1
+  2: Question text for level 2
+  3: Question text for level 3
+  4: Question text for level 4
+  5: Question text for level 5
+
+  [Another Category]
+  1: ...
+  ...
+
+Rules:
+- Categories are declared with square brackets: [Category Name]
+- Each question is on its own line starting with the level number and a colon: `N: text`
+- Blank lines between categories are ignored
+- Support any number of categories (the board grid adapts)
+- Every category must have exactly 5 questions (levels 1–5)
+- There are no answers — only questions
+
+Provide a sample `questions.txt` with 4–5 categories of general-knowledge questions suitable for a Microsoft internal team event.
+
+────────────────────────────────────────────
+PARSING
+────────────────────────────────────────────
+- Parse `questions.txt` client-side in JavaScript after fetching it.
+- If `fetch` fails (e.g. opened via `file://` without a local server), show a clear error message on screen:
+  "Could not load questions.txt. Please serve this file from a local web server (e.g. run: npx serve .)".
+
+────────────────────────────────────────────
+ADDITIONAL REQUIREMENTS
+────────────────────────────────────────────
+- Fully responsive: works on large displays (1080p+) and scales reasonably on smaller screens.
+- No external dependencies (no jQuery, no Bootstrap, no CDN links) — fully offline-capable.
+- Semantic HTML5, clean readable JavaScript (ES6+), no inline event handlers in HTML.
+- Add a simple title bar at the top: "Knowledge Challenge" styled in Microsoft brand fonts/colors.
+- Include brief comments in the JS explaining the main sections (parser, board builder, overlay logic).

@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unnamed Talking Club</title>
+  <style>
+    /* ─── Reset & Base ──────────────────────────────────────────────────────── */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #1b1b1b;
+      color: #ffffff;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ─── Title Bar ─────────────────────────────────────────────────────────── */
+    .title-bar {
+      width: 100%;
+      background: linear-gradient(135deg, #005a9e 0%, #0078d4 60%, #1094d6 100%);
+      padding: 18px 32px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0, 120, 212, 0.4);
+      position: relative;
+    }
+
+    .title-bar::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #50e6ff, #0078d4, #50e6ff);
+    }
+
+    .title-bar h1 {
+      font-size: clamp(1.4rem, 3vw, 2.4rem);
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #ffffff;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ─── Board ─────────────────────────────────────────────────────────────── */
+    .board-wrapper {
+      width: 100%;
+      padding: 28px 20px;
+      flex: 1;
+    }
+
+    #board {
+      display: grid;
+      gap: 10px;
+      width: 100%;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    /* ─── Cells ──────────────────────────────────────────────────────────────── */
+    .cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 8px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    /* Category header cells */
+    .cell.header {
+      background: linear-gradient(180deg, #0078d4 0%, #005a9e 100%);
+      font-size: clamp(0.65rem, 1.3vw, 0.95rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #ffffff;
+      min-height: 64px;
+      border: 1px solid rgba(80, 230, 255, 0.3);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      line-height: 1.3;
+      word-break: break-word;
+    }
+
+    /* Question level cells */
+    .cell.question {
+      background: linear-gradient(160deg, #0e3a5e 0%, #082c47 100%);
+      border: 2px solid #0078d4;
+      font-size: clamp(1.6rem, 3.2vw, 2.8rem);
+      font-weight: 700;
+      color: #50e6ff;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+      user-select: none;
+      min-height: 100px;
+      text-shadow: 0 0 12px rgba(80, 230, 255, 0.6);
+    }
+
+    .cell.question:hover:not(.answered) {
+      transform: scale(1.05);
+      box-shadow: 0 0 28px rgba(80, 230, 255, 0.55), 0 4px 16px rgba(0, 0, 0, 0.5);
+      background: linear-gradient(160deg, #154f7d 0%, #0e3a5e 100%);
+      border-color: #50e6ff;
+    }
+
+    .cell.question:active:not(.answered) {
+      transform: scale(0.97);
+    }
+
+    /* Dimmed state for answered cards */
+    .cell.question.answered {
+      background: #2a2a2a;
+      border-color: #3a3a3a;
+      color: #444444;
+      cursor: default;
+      opacity: 0.45;
+      text-shadow: none;
+    }
+
+    /* ─── Backdrop ───────────────────────────────────────────────────────────── */
+    .backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .backdrop.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* ─── Overlay Panel ──────────────────────────────────────────────────────── */
+    .overlay {
+      background: linear-gradient(160deg, #0e3a5e 0%, #071f33 100%);
+      border: 2px solid #0078d4;
+      border-radius: 16px;
+      width: clamp(300px, 75vw, 960px);
+      min-height: 40vh;
+      max-height: 80vh;
+      padding: 52px 56px 48px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      /* Start small for scale-up animation */
+      transform: scale(0.45);
+      opacity: 0;
+      transition: transform 0.32s cubic-bezier(0.34, 1.4, 0.64, 1), opacity 0.28s ease;
+      box-shadow: 0 0 80px rgba(80, 230, 255, 0.18), 0 20px 60px rgba(0, 0, 0, 0.7);
+    }
+
+    /* Accent line at top of overlay */
+    .overlay::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #50e6ff, #0078d4, #50e6ff, transparent);
+      border-radius: 0 0 4px 4px;
+    }
+
+    .backdrop.open .overlay {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    /* Row with category name and level badge */
+    .overlay-meta {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .overlay-category {
+      font-size: clamp(0.8rem, 1.6vw, 1.1rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #50e6ff;
+    }
+
+    .overlay-level {
+      font-size: clamp(0.8rem, 1.4vw, 1rem);
+      font-weight: 600;
+      color: #c8c8c8;
+      background: rgba(0, 120, 212, 0.25);
+      border: 1px solid rgba(0, 120, 212, 0.5);
+      padding: 4px 14px;
+      border-radius: 20px;
+    }
+
+    /* Question text */
+    .overlay-question {
+      font-size: clamp(1.3rem, 2.8vw, 2rem);
+      font-weight: 400;
+      text-align: center;
+      line-height: 1.55;
+      color: #ffffff;
+      max-width: 820px;
+    }
+
+    /* Close button */
+    .close-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: 2px solid rgba(200, 200, 200, 0.4);
+      color: #c8c8c8;
+      font-size: 1rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+      line-height: 1;
+    }
+
+    .close-btn:hover {
+      border-color: #50e6ff;
+      color: #50e6ff;
+      background: rgba(80, 230, 255, 0.08);
+    }
+
+    /* ─── Error state ────────────────────────────────────────────────────────── */
+    #error {
+      display: none;
+      background: #2d1010;
+      border: 2px solid #d13438;
+      border-radius: 10px;
+      padding: 28px 36px;
+      margin: 48px auto;
+      max-width: 600px;
+      text-align: center;
+      color: #ffffff;
+      line-height: 1.7;
+    }
+
+    #error code {
+      background: #1b1b1b;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: "Cascadia Code", "Consolas", monospace;
+      color: #50e6ff;
+      font-size: 0.9em;
+    }
+
+    /* ─── Timer ──────────────────────────────────────────────────────────────── */
+    .timer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      margin-top: auto;
+      padding-top: 24px;
+      border-top: 1px solid rgba(80, 230, 255, 0.15);
+      width: 100%;
+    }
+
+    .timer-display {
+      font-family: "Cascadia Code", "Consolas", monospace;
+      font-size: clamp(2.5rem, 5vw, 3.5rem);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.08em;
+      color: #50e6ff;
+      text-shadow: 0 0 20px rgba(80, 230, 255, 0.4);
+      transition: color 0.5s ease, text-shadow 0.5s ease;
+    }
+
+    .timer-display.warning {
+      color: #ffb347;
+      text-shadow: 0 0 20px rgba(255, 179, 71, 0.5);
+    }
+
+    .timer-display.expired {
+      color: #d13438;
+      text-shadow: 0 0 24px rgba(209, 52, 56, 0.6);
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .timer-btn {
+      min-width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.06);
+      color: #c8c8c8;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      backdrop-filter: blur(4px);
+    }
+
+    .timer-btn:hover {
+      border-color: #50e6ff;
+      color: #50e6ff;
+      background: rgba(80, 230, 255, 0.1);
+      box-shadow: 0 0 12px rgba(80, 230, 255, 0.2);
+    }
+
+    .timer-btn-primary {
+      min-width: 100px;
+      background: #0078d4;
+      border-color: #0078d4;
+      color: #ffffff;
+    }
+
+    .timer-btn-primary:hover {
+      background: #1a8ae0;
+      border-color: #1a8ae0;
+      box-shadow: 0 0 16px rgba(0, 120, 212, 0.5);
+      color: #ffffff;
+    }
+
+    .timer-btn-danger {
+      min-width: 100px;
+      background: rgba(209, 52, 56, 0.15);
+      border-color: rgba(209, 52, 56, 0.5);
+      color: #f08080;
+    }
+
+    .timer-btn-danger:hover {
+      background: rgba(209, 52, 56, 0.3);
+      border-color: #d13438;
+      box-shadow: 0 0 12px rgba(209, 52, 56, 0.3);
+      color: #f08080;
+    }
+
+    /* ─── Responsive tweaks ──────────────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .board-wrapper { padding: 12px 8px; }
+      #board { gap: 6px; }
+      .overlay { padding: 40px 24px 36px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Title Bar -->
+  <header class="title-bar">
+    <h1>Unnamed Talking Club</h1>
+  </header>
+
+  <!-- Error message shown when questions.txt cannot be fetched -->
+  <div id="error">
+    Could not load <code>questions.txt</code>.<br>
+    Please serve this file from a local web server.<br><br>
+    Run: <code>npx serve .</code> &nbsp;then open&nbsp; <code>http://localhost:3000</code>
+  </div>
+
+  <!-- Game Board (populated by JavaScript) -->
+  <main class="board-wrapper">
+    <div id="board"></div>
+  </main>
+
+  <!-- Question Overlay -->
+  <div class="backdrop" id="backdrop">
+    <div class="overlay" id="overlay">
+      <button class="close-btn" id="closeBtn" aria-label="Close">&#x2715;</button>
+      <div class="overlay-meta">
+        <span class="overlay-category" id="overlayCategory"></span>
+        <span class="overlay-level"    id="overlayLevel"></span>
+      </div>
+      <p class="overlay-question" id="overlayQuestion"></p>
+      <div class="timer">
+        <div class="timer-display" id="timerDisplay">3:00</div>
+        <div class="timer-controls">
+          <button class="timer-btn" id="timerMinus" aria-label="Decrease time">&minus;</button>
+          <button class="timer-btn timer-btn-primary" id="timerStart">Start</button>
+          <button class="timer-btn timer-btn-danger" id="timerStop">Stop</button>
+          <button class="timer-btn" id="timerPlus" aria-label="Increase time">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── State ──────────────────────────────────────────────────────────────────
+    // Tracks which cards have been opened; resets on every page reload.
+    const answered = new Set();
+
+    // ── Parser ─────────────────────────────────────────────────────────────────
+    // Parses questions.txt into an array of { name, questions: {1..5: text} }.
+    //
+    // Format:
+    //   [Category Name]
+    //   1: Question text for level 1
+    //   2: Question text for level 2
+    //   ...
+    function parseQuestions(text) {
+      const categories = [];
+      let current = null;
+
+      for (const rawLine of text.split('\n')) {
+        const line = rawLine.trim();
+        if (!line) continue;
+
+        // Category header
+        const catMatch = line.match(/^\[(.+)\]$/);
+        if (catMatch) {
+          current = { name: catMatch[1], questions: {} };
+          categories.push(current);
+          continue;
+        }
+
+        // Question line: "N: text"
+        const qMatch = line.match(/^(\d+):\s*(.+)$/);
+        if (qMatch && current) {
+          current.questions[parseInt(qMatch[1], 10)] = qMatch[2];
+        }
+      }
+
+      return categories;
+    }
+
+    // ── Board Builder ──────────────────────────────────────────────────────────
+    // Creates the CSS grid dynamically — one column per category, six rows total
+    // (one header + five question levels).
+    function buildBoard(categories) {
+      const board = document.getElementById('board');
+      board.style.gridTemplateColumns = `repeat(${categories.length}, 1fr)`;
+
+      // Header row — category names
+      for (const cat of categories) {
+        const cell = document.createElement('div');
+        cell.className = 'cell header';
+        cell.textContent = cat.name;
+        board.appendChild(cell);
+      }
+
+      // Question rows — levels 1 through 5
+      for (let level = 1; level <= 5; level++) {
+        for (const cat of categories) {
+          const cell = document.createElement('div');
+          cell.className = 'cell question';
+          cell.textContent = level;
+          cell.dataset.category = cat.name;
+          cell.dataset.level    = level;
+          cell.dataset.question = cat.questions[level] ?? '(No question available)';
+          cell.addEventListener('click', handleCardClick);
+          board.appendChild(cell);
+        }
+      }
+    }
+
+    // ── Timer ────────────────────────────────────────────────────────────────
+    let timerMinutes  = 3;
+    let timerSeconds  = timerMinutes * 60;
+    let timerInterval = null;
+
+    const timerDisplay = document.getElementById('timerDisplay');
+
+    function updateTimerDisplay() {
+      const m = Math.floor(timerSeconds / 60);
+      const s = timerSeconds % 60;
+      timerDisplay.textContent = `${m}:${String(s).padStart(2, '0')}`;
+
+      timerDisplay.classList.toggle('warning', timerSeconds > 0 && timerSeconds <= 30);
+      timerDisplay.classList.toggle('expired', timerSeconds === 0);
+    }
+
+    function tick() {
+      if (timerSeconds <= 0) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        updateTimerDisplay();
+        return;
+      }
+      timerSeconds--;
+      updateTimerDisplay();
+    }
+
+    function startTimer() {
+      if (timerInterval) return;
+      if (timerSeconds === 0) timerSeconds = timerMinutes * 60;
+      updateTimerDisplay();
+      timerInterval = setInterval(tick, 1000);
+    }
+
+    function stopTimer() {
+      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+      timerSeconds = timerMinutes * 60;
+      updateTimerDisplay();
+    }
+
+    function adjustMinutes(delta) {
+      if (timerInterval) return;
+      timerMinutes = Math.max(1, Math.min(10, timerMinutes + delta));
+      timerSeconds = timerMinutes * 60;
+      updateTimerDisplay();
+    }
+
+    document.getElementById('timerStart').addEventListener('click', startTimer);
+    document.getElementById('timerStop').addEventListener('click', stopTimer);
+    document.getElementById('timerPlus').addEventListener('click', () => adjustMinutes(1));
+    document.getElementById('timerMinus').addEventListener('click', () => adjustMinutes(-1));
+
+    // ── Overlay Logic ──────────────────────────────────────────────────────────
+    // Opens the overlay by setting the .open class — CSS handles the animation.
+    function openOverlay(category, level, question) {
+      stopTimer();
+      document.getElementById('overlayCategory').textContent = category;
+      document.getElementById('overlayLevel').textContent    = `Level ${level}`;
+      document.getElementById('overlayQuestion').textContent = question;
+      document.getElementById('backdrop').classList.add('open');
+    }
+
+    // Closes the overlay — CSS reverses the animation automatically.
+    function closeOverlay() {
+      stopTimer();
+      document.getElementById('backdrop').classList.remove('open');
+    }
+
+    // ── Card Click Handler ─────────────────────────────────────────────────────
+    function handleCardClick(e) {
+      const cell = e.currentTarget;
+      if (cell.classList.contains('answered')) return;
+
+      // Mark as answered immediately so double-clicks don't reopen
+      cell.classList.add('answered');
+      answered.add(`${cell.dataset.category}|${cell.dataset.level}`);
+
+      openOverlay(cell.dataset.category, cell.dataset.level, cell.dataset.question);
+    }
+
+    // Close via ✕ button
+    document.getElementById('closeBtn').addEventListener('click', closeOverlay);
+
+    // Close by clicking outside the overlay panel (on the backdrop itself)
+    document.getElementById('backdrop').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeOverlay();
+    });
+
+    // Close with the Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeOverlay();
+    });
+
+    // ── Bootstrap ─────────────────────────────────────────────────────────────
+    // Fetch and parse questions.txt, then build the board. Show error on failure.
+    fetch('./questions.txt')
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.text();
+      })
+      .then(text => {
+        const categories = parseQuestions(text);
+        if (categories.length === 0) throw new Error('No categories found in questions.txt');
+        buildBoard(categories);
+      })
+      .catch(err => {
+        console.error('Failed to load questions.txt:', err);
+        document.getElementById('error').style.display = 'block';
+      });
+  </script>
+
+</body>
+</html>
