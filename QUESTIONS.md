@@ -6,7 +6,7 @@
 | Level | Situation |
 |:-----:|-----------|
 | 1 | Pitch your favourite hobby to a stranger at a party in 30 seconds. Make them want to try it. |
-| 2 | You are a real estate agent trying to sell an obviously haunted house. Pitch it to a young couple without ever acknowledging anything is wrong. |
+| 2 | You are a travel agent trying to sell a package holiday to Antarctica to someone who hates the cold. You have 60 seconds — and you cannot mention the words "adventure" or "unique". |
 | 3 | You have 60 seconds to pitch yourself for your dream job — but you're talking to the CEO's assistant who has no hiring authority. Make them remember you. |
 | 4 | Pitch a new product to skeptical investors: a subscription box that sends personalised motivational rocks to remote workers. You have 90 seconds — and you know nothing about this industry. |
 | 5 | You're mid-pitch to a major investor when they interrupt: "Your competitor already has a better product and more funding." Recover and close the deal without skipping a beat. |
@@ -16,7 +16,7 @@
 
 | Level | Situation |
 |:-----:|-----------|
-| 1 | Tell a 1-minute story about your most embarrassing moment — real or invented. It must have a beginning, middle, and end. |
+| 1 | Tell a 1-minute story about a time you completely misread a social situation — real or invented. It must end with the moment you realised your mistake. |
 | 2 | Tell a story about an unlikely hero who must save the day — but the hero has one absurd fatal flaw: they are physically incapable of walking through any door without knocking on it exactly three times, no matter the urgency. |
 | 3 | Tell a 2-minute story that starts with: "The elevator had been stuck for 20 minutes, and that's when my boss finally told the truth..." |
 | 4 | Tell a story with a clear arc — but you must switch genres at least three times: open as a thriller, shift into a romance, and close as a nature documentary. |
@@ -31,7 +31,7 @@
 | 2 | You are a new employee on your first day. Your manager gives you increasingly bizarre instructions with complete seriousness. Accept each one and ask a sensible follow-up question. |
 | 3 | Have a completely normal conversation about planning the office summer party — but every single sentence you say must include the word "protocol". |
 | 4 | With a partner, improvise a 2-minute scene where you are rival chefs on a cooking show. One of you can only say "Yes, and..." while the other can only say "Yes, but..." — the audience decides who wins. |
-| 5 | You're chairing an important board meeting to discuss the annual budget. Over 3 minutes, three escalating crises unfold: a fire alarm, a goat wandering in, and the CFO claiming they're a time traveller. Stay in character, stay professional, get through the agenda. |
+| 5 | You and a partner are co-hosting a live cooking show. Midway through, the producer (played by the audience) feeds you increasingly absurd ingredient substitutions via earpiece. Over 3 minutes, keep the show running, stay in character, and "Yes, and..." every curveball without breaking. |
 
 ## The Hot Seat
 *Answering difficult, unexpected, or adversarial questions under pressure*
@@ -42,7 +42,7 @@
 | 2 | You're a restaurant critic on live TV. Describe the worst meal you've ever had — but make it sound like a life-changing experience. |
 | 3 | Defend this position out loud, even if you personally disagree: "Remote work is fundamentally harmful to company culture and should be phased out entirely." |
 | 4 | You are the CEO of a company that just suffered a major public data breach affecting millions of customers. Face an angry journalist in a live press conference. Answer three questions. |
-| 5 | Answer five rapid-fire questions in 30-second bursts, back to back, with no pauses: (1) What would you do with 1 billion euros? (2) How do you handle conflict with a coworker? (3) Describe your leadership style in one sentence. (4) What is fundamentally wrong with the modern workplace? (5) What is the one thing every team leader must know? |
+| 5 | Answer five rapid-fire questions in 30-second bursts, back to back, with no pauses: (1) If you could uninvent one thing, what would it be? (2) What is the most overrated workplace skill? (3) Pitch yourself as a superhero in one sentence. (4) What rule would you add to every meeting? (5) What is the hardest truth about teamwork? |
 
 ## Walk in Their Shoes
 *Character embodiment — inhabit a persona, commit fully*
